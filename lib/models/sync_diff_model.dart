@@ -6,12 +6,12 @@ import 'package:mobync/constants/constants.dart';
 
 class SyncDiff extends Comparable with EquatableMixin {
   SyncDiff({
-    this.id,
-    this.logicalClock,
-    this.utcTimestamp,
-    this.type,
-    this.model,
-    this.jsonData,
+    required this.id,
+    required this.logicalClock,
+    required this.utcTimestamp,
+    required this.type,
+    required this.model,
+    required this.jsonData,
   }) : assert(id != null &&
             logicalClock >= 0 &&
             utcTimestamp >= 0 &&
@@ -20,9 +20,9 @@ class SyncDiff extends Comparable with EquatableMixin {
             jsonDecode(jsonData) is Map);
 
   static final String tableName = 'MobyncSyncDiffsTable';
-  String id, model, jsonData;
-  SyncDiffType type;
-  int logicalClock, utcTimestamp;
+  late String id, model, jsonData;
+  late SyncDiffType type;
+  late int logicalClock, utcTimestamp;
 
   @override
   List<Object> get props =>
@@ -58,7 +58,7 @@ class SyncDiff extends Comparable with EquatableMixin {
   }
 
   /// Static to map parser.
-  Map<String, dynamic> toMap({List<String> onlyFields}) {
+  Map<String, dynamic> toMap({List<String>? onlyFields}) {
     Map<String, dynamic> map = {
       'id': id,
       'logicalClock': logicalClock,

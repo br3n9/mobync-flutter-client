@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 /// The [success] flag can not not be null.
 class MobyncResponse {
   MobyncResponse({
-    @required this.success,
+    required this.success,
     this.message,
     this.data,
   }) : assert(success != null);
@@ -15,10 +15,10 @@ class MobyncResponse {
   final bool success;
 
   /// Message in case it has failed.
-  final String message;
+  final String? message;
 
   /// Data in case it succeeded and might return data.
-  final List data;
+  final List? data;
 
   @override
   String toString() {

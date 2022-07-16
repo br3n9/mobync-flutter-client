@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'client_implementation.dart';
 
 void main() {
-  MyMobyncClient client;
+  late MyMobyncClient client;
 
   setUpAll(() async {
     client = MyMobyncClient();

@@ -13,22 +13,22 @@ class MyMobyncClient extends MobyncClient {
 
   @override
   Future<int> commitLocalCreate(String model, Map data) {
-    for (int i = 0; i < db[model].length; i++)
-      if (db[model][i]['id'] == data['id']) {
+    for (int i = 0; i < db[model]!.length; i++)
+      if (db[model]![i]['id'] == data['id']) {
         throw Exception('Id already exists for $model and $data!');
       }
 
-    db[model].add(data);
+    db[model]!.add(data);
 
     return Future.value(1);
   }
 
   @override
   Future<int> commitLocalUpdate(String model, Map data) {
-    for (int i = 0; i < db[model].length; i++)
-      if (db[model][i]['id'] == data['id']) {
+    for (int i = 0; i < db[model]!.length; i++)
+      if (db[model]![i]['id'] == data['id']) {
         data.forEach((key, value) {
-          db[model][i][key] = value;
+          db[model]![i][key] = value;
         });
         return Future.value(1);
       }
@@ -37,18 +37,18 @@ class MyMobyncClient extends MobyncClient {
 
   @override
   Future<int> commitLocalDelete(String model, String id) {
-    for (int i = 0; i < db[model].length; i++)
-      if (db[model][i]['id'] == id) {
-        db[model].removeAt(i);
+    for (int i = 0; i < db[model]!.length; i++)
+      if (db[model]![i]['id'] == id) {
+        db[model]!.removeAt(i);
         return Future.value(1);
       }
     return Future.value(0);
   }
 
   @override
-  Future<List<Map>> executeLocalRead(String model, {List<ReadFilter> filters}) {
-    List<Map> filteredData = [];
-    for (Map v in db[model]) {
+  Future<List<Map<String, dynamic>>> executeLocalRead(String model, {List<ReadFilter>? filters}) {
+    List<Map<String, dynamic>> filteredData = [];
+    for (Map<String, dynamic> v in db[model]!) {
       bool accepted = filters == null;
       if (filters != null)
         filters.forEach((filter) {

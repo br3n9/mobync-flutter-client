@@ -4,9 +4,9 @@ import 'package:mobync/models/models.dart';
 /// The [success] flag can not not be null.
 class ServerSyncResponse {
   ServerSyncResponse({
-    this.success,
+    required this.success,
     this.message,
-    this.logicalClock,
+    this.logicalClock = 0,
     this.diffs,
   }) : assert((success == false) ||
             (success == true && logicalClock >= 0 && diffs is List));
@@ -15,13 +15,13 @@ class ServerSyncResponse {
   final bool success;
 
   /// Message in case it has failed.
-  final String message;
+  final String? message;
 
   /// Logical clock from upstream.
-  final int logicalClock;
+  int logicalClock;
 
   /// Diffs from upstream to be executed on the local storage.
-  final List<SyncDiff> diffs;
+  final List<SyncDiff>? diffs;
 
   @override
   String toString() {

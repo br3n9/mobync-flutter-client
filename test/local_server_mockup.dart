@@ -28,7 +28,7 @@ class ServerMockup {
     var diffs =
         serverDiffs.where((e) => e.logicalClock >= userLogicalClock).toList();
 
-    mergeDiffs(userLogicalClock, userDiffs ?? []);
+    mergeDiffs(userLogicalClock, userDiffs);
 
     return Future.value(ServerSyncResponse(
       success: true,

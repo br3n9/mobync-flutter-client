@@ -5,7 +5,7 @@ import 'client_implementation.dart';
 import 'local_server_mockup.dart';
 
 void main() {
-  MyMobyncClient client1, client2;
+  late MyMobyncClient client1, client2;
 
   setUpAll(() async {
     client1 = MyMobyncClient();
@@ -20,11 +20,11 @@ void main() {
     int logicalClock2 = await client2.getLogicalClock();
     expect(logicalClock2, 0);
 
-    MobyncResponse res1 = await client1.read('model1');
+    MobyncResponse res1 = await client1.read('model1', filters: []);
     expect(res1.success, true);
     expect(res1.data, []);
 
-    MobyncResponse res2 = await client2.read('model1');
+    MobyncResponse res2 = await client2.read('model1', filters: []);
     expect(res2.success, true);
     expect(res2.data, []);
   });

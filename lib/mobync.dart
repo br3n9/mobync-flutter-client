@@ -28,7 +28,7 @@ abstract class MobyncClient {
   Future<int> commitLocalDelete(String model, String id);
 
   /// This function reads from a local storage all entries from a given model using some filters.
-  Future<List<Map>> executeLocalRead(String model, {List<ReadFilter> filters});
+  Future<List<Map<String, dynamic>>> executeLocalRead(String model, {List<ReadFilter>? filters});
 
   /// This functions gets the auth token to be used on the synchronization requests.
   Future<String> getAuthToken();
@@ -39,7 +39,7 @@ abstract class MobyncClient {
   /// Use this function to perform a create operation that might be synchronized to the remote API.
   ///
   /// The response is wrapped into a [MobyncResponse] object to avoid bugs.
-  Future<MobyncResponse> create(String model, Map metadata) async {
+  Future<MobyncResponse> create(String model, Map<String, dynamic> metadata) async {
     try {
       await commitLocalCreate(model, metadata);
       await commitLocalCreate(
@@ -67,7 +67,7 @@ abstract class MobyncClient {
   /// Use this function to perform an update operation that might be synchronized to the remote API.
   ///
   /// The response is wrapped into a [MobyncResponse] object to avoid bugs.
-  Future<MobyncResponse> update(String model, Map metadata) async {
+  Future<MobyncResponse> update(String model, Map<String, dynamic> metadata) async {
     try {
       await commitLocalUpdate(model, metadata);
       await commitLocalCreate(
@@ -125,7 +125,7 @@ abstract class MobyncClient {
   /// Use this function to perform a read on the local storage.
   ///
   /// The response is wrapped into a [MobyncResponse] object to avoid bugs.
-  Future<MobyncResponse> read(String model, {List<ReadFilter> filters}) async {
+  Future<MobyncResponse> read(String model, {List<ReadFilter>? filters}) async {
     try {
       List<Map> filteredData = await executeLocalRead(model, filters: filters);
       return Future.value(MobyncResponse(
@@ -141,7 +141,7 @@ abstract class MobyncClient {
   }
 
   /// Use this function to synchronize the local storage to the remote storage.
-  Future<void> synchronize() async {
+  Future<bool?> synchronize() async {
     int logicalClock = await getLogicalClock();
     List<SyncDiff> localDiffs = await getSyncDiffs();
     String authToken = await getAuthToken();
@@ -154,7 +154,7 @@ abstract class MobyncClient {
     if (res.success) {
       if (res.logicalClock > logicalClock) {
         try {
-          await _executeSyncDiffs(res.diffs);
+          await _executeSyncDiffs(res.diffs!);
           await setLogicalClock(res.logicalClock);
         } catch (e) {
           print(e);
@@ -171,7 +171,7 @@ abstract class MobyncClient {
   Future<void> _executeSyncDiffs(List<SyncDiff> diffs) async {
     diffs.forEach((el) async {
       int res;
-      Map data = jsonDecode(el.jsonData);
+      Map<String, dynamic> data = jsonDecode(el.jsonData);
       switch (el.type) {
         case SyncDiffType.create:
           res = await commitLocalCreate(el.model, data);
@@ -213,7 +213,7 @@ abstract class MobyncClient {
             .toList(),
       });
 
-      http.Response resp = await http.post(syncEndpoint,
+      http.Response resp = await http.post(Uri.parse(syncEndpoint),
           headers: {'Content-Type': 'application/json'}, body: body);
 
       if (resp.statusCode.toString().startsWith('2')) {
@@ -224,7 +224,7 @@ abstract class MobyncClient {
                 jsonData: e['json_data'],
                 logicalClock: e['logical_clock'],
                 model: e['model'],
-                type: SyncDiffTypesReversedMap[e['type']],
+                type: SyncDiffTypesReversedMap[e['type']]!,
                 utcTimestamp: e['utc_timestamp']))
             .toList();
         syncDiffs.sort();
@@ -248,7 +248,7 @@ abstract class MobyncClient {
   /// This function gets the local diffs that have not been synchronized yet.
   Future<List<SyncDiff>> getSyncDiffs({logicalClock}) async {
     if (logicalClock == null) logicalClock = await getLogicalClock();
-    List<Map> maps = await executeLocalRead(
+    List<Map<String, dynamic>> maps = await executeLocalRead(
       SyncDiff.tableName,
       filters: [
         ReadFilter('logicalClock', FilterType.majorOrEqual, logicalClock)
